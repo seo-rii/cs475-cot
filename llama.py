@@ -1,35 +1,35 @@
-from local_gemma import LocalGemma2ForCausalLM
-from transformers import AutoTokenizer
 import json
 import tqdm
 import datetime
 import os
 from torch.nn.utils.rnn import pad_sequence
 from util import get_input, parse_response_cot, COT_PROMPT
+import torch
+import transformers
 
 QUESTION = "What is 6 times 3?"
 BATCH_SIZE = 2
 NUM_ITERATIONS = 10
 
-model = LocalGemma2ForCausalLM.from_pretrained("google/gemma-2-2b-it", preset="auto")
-tokenizer = AutoTokenizer.from_pretrained("google/gemma-2-2b-it")
+model_id = "meta-llama/Llama-3.2-3B"
+pipeline = transformers.pipeline("text-generation", model=model_id, model_kwargs={"torch_dtype": torch.bfloat16}, device_map="auto")
 
 def infer(inputs, max_new_tokens = 4096):
-    generated_ids = model.generate(
+    generated_ids = pipeline(
             **inputs,
             max_new_tokens=max_new_tokens,
             do_sample=True
         )
-    decoded_texts = tokenizer.batch_decode(generated_ids)
+    decoded_texts = pipeline.tokenizer.batch_decode(generated_ids)
     return decoded_texts
 
 def make_input(questions, use_cot=True):
     messages = [get_input(question, use_cot=use_cot) for question in questions]
-    model_inputs = [tokenizer.apply_chat_template(message, return_tensors="pt", return_dict=True).to(model.device) for message in messages]
+    model_inputs = [pipeline.tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=True) for message in messages]
 
     return {
-        'input_ids': pad_sequence([model_input['input_ids'].reshape(-1) for model_input in model_inputs], batch_first=True, padding_side='left'),
-        'attention_mask': pad_sequence([model_input['attention_mask'].reshape(-1) for model_input in model_inputs], batch_first=True, padding_side='left'),
+        'input_ids': pad_sequence([model_input['input_ids'].reshape(-1) for model_input in model_inputs], batch_first=True, padding_value=0),
+        'attention_mask': pad_sequence([model_input['attention_mask'].reshape(-1) for model_input in model_inputs], batch_first=True, padding_value=0),
     }
 
 def main():
