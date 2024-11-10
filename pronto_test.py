@@ -28,8 +28,9 @@ def test_infer(filename="prontoqa/1hop.json"):
         for j, question in enumerate(chunk):
             if not ans[j]:
                 continue
-            res.append({"correct": question["answer"] == ans[j]["answer"], "question": question["question"], "answer": question["answer"], "response": ans[j]})
-            if question["answer"].lower() in ans[j]["answer"].lower():
+            correct = question["answer"].lower() in ans[j]["answer"].lower()
+            res.append({"correct": correct, "question": question["question"], "answer": question["answer"], "response": ans[j]})
+            if correct:
                 corr += 1
 
 
