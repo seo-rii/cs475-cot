@@ -5,13 +5,14 @@ import tqdm
 import datetime
 import os
 from torch.nn.utils.rnn import pad_sequence
+from torch import bfloat16
 from util import get_input, parse_response_cot, COT_PROMPT
 
 QUESTION = "What is 6 times 3?"
 BATCH_SIZE = 2
 NUM_ITERATIONS = 10
 
-model = LocalGemma2ForCausalLM.from_pretrained("google/gemma-2-2b-it", preset="auto")
+model = LocalGemma2ForCausalLM.from_pretrained("google/gemma-2-2b-it", preset="auto", torch_dtype=bfloat16)
 tokenizer = AutoTokenizer.from_pretrained("google/gemma-2-2b-it")
 
 def infer(inputs, max_new_tokens = 1024):
