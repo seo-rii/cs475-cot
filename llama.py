@@ -10,12 +10,17 @@ import transformers
 QUESTION = "What is 6 times 3?"
 BATCH_SIZE = 2
 NUM_ITERATIONS = 10
+DEFAULT_CHAT_TEMPLATE = """{{ bos_token }}{% if messages[0]['role'] == 'system' %}{{ raise_exception('System role not supported') }}{% endif %}{% for message in messages %}{% if (message['role'] == 'user') != (loop.index0 % 2 == 0) %}{{ raise_exception('Conversation roles must alternate user/assistant/user/assistant/...') }}{% endif %}{% if (message['role'] == 'assistant') %}{% set role = 'model' %}{% else %}{% set role = message['role'] %}{% endif %}{{ '<start_of_turn>' + role + '
+' + message['content'] | trim + '<end_of_turn>
+' }}{% endfor %}{% if add_generation_prompt %}{{'<start_of_turn>model
+'}}{% endif %}"""
 
 model_id = "meta-llama/Llama-3.2-3B"
 pipeline = transformers.pipeline("text-generation", model=model_id, model_kwargs={"torch_dtype": torch.bfloat16}, device_map="auto")
+pipeline.tokenizer.chat_template = DEFAULT_CHAT_TEMPLATE
 
 def infer(inputs, max_new_tokens = 4096):
-    generated_ids = pipeline(
+    generated_ids = pipeline.model.generate(
             **inputs,
             max_new_tokens=max_new_tokens,
             do_sample=True
@@ -25,8 +30,8 @@ def infer(inputs, max_new_tokens = 4096):
 
 def make_input(questions, use_cot=True):
     messages = [get_input(question, use_cot=use_cot) for question in questions]
-    model_inputs = [pipeline.tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=True) for message in messages]
-
+    model_inputs = [pipeline.tokenizer.apply_chat_template(message, return_tensors="pt", return_dict=True).to(pipeline.model.device) for message in messages]
+    
     return {
         'input_ids': pad_sequence([model_input['input_ids'].reshape(-1) for model_input in model_inputs], batch_first=True, padding_value=0),
         'attention_mask': pad_sequence([model_input['attention_mask'].reshape(-1) for model_input in model_inputs], batch_first=True, padding_value=0),
