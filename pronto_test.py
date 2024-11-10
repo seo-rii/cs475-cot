@@ -22,6 +22,7 @@ def test_infer(filename="prontoqa/1hop.json"):
     corr = 0
     for i in tqdm.trange(0, len(req), CHUNK_SIZE):
         chunk = req[i:i + CHUNK_SIZE]
+        # inputs = make_input([q["question"] for q in chunk], cot_prompt="Answer the following question in just one word: ")
         inputs = make_input([q["question"] for q in chunk])
         ans = parse_response_cot(infer(inputs))
         for j, question in enumerate(chunk):

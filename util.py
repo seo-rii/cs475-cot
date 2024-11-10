@@ -23,7 +23,11 @@ def split_text_cot(text):
     return [part.strip() for part in parts if part and part.strip()]
 
 def parse_response_cot_one(response):
-    response = response.split('<end_of_turn>')[-2].strip()
+    turns = response.split('<end_of_turn>')
+    if len(turns) < 2:
+        response = ""
+    else:
+        response = turns[len(turns) // 2 * 2 - 1]
     answer = response.split('<Output>')[-1].split('</Output>')[0].strip()
     if response != answer:
         return {"answer": answer, "parts": split_text_cot(response)}

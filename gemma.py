@@ -14,7 +14,7 @@ NUM_ITERATIONS = 10
 model = LocalGemma2ForCausalLM.from_pretrained("google/gemma-2-2b-it", preset="auto")
 tokenizer = AutoTokenizer.from_pretrained("google/gemma-2-2b-it")
 
-def infer(inputs, max_new_tokens = 4096):
+def infer(inputs, max_new_tokens = 1024):
     generated_ids = model.generate(
             **inputs,
             max_new_tokens=max_new_tokens,
@@ -23,8 +23,8 @@ def infer(inputs, max_new_tokens = 4096):
     decoded_texts = tokenizer.batch_decode(generated_ids)
     return decoded_texts
 
-def make_input(questions, use_cot=True):
-    messages = [get_input(question, use_cot=use_cot) for question in questions]
+def make_input(questions, cot_prompt=COT_PROMPT, use_cot=True):
+    messages = [get_input(question, use_cot=use_cot, cot_prompt=cot_prompt) for question in questions]
     model_inputs = [tokenizer.apply_chat_template(message, return_tensors="pt", return_dict=True).to(model.device) for message in messages]
 
     return {
