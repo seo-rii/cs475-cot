@@ -2,22 +2,28 @@ from gemma import infer, parse_response_cot, make_input
 import os
 import json
 import tqdm
+import re
 
 CHUNK_SIZE=10
 COT=True
 
-def test_infer(filename="prontoqa/1hop.json"):
+def parse_number(st):
+    li = re.findall(r"\d+", st)
+    if len(li) == 0:
+        return None
+    return int(li[0])
+
+def test_infer(filename="math401-llm.json"):
     os.makedirs("output", exist_ok=True)
     req = []
     res = []
 
     with open(filename, "r") as f:
         data = json.load(f)
-        for question_name in data:
-            for example in data[question_name]:
-                question = data[question_name][example]["question"] + " " + data[question_name][example]["query"]
-                answer = data[question_name][example]["answer"]
-                req.append({"question": question, "answer": answer})
+        for row in data:
+            question = row["query"]
+            answer = row["response"]
+            req.append({"question": question, "answer": answer})
     
     req = req[:100]
     corr = 0
@@ -31,13 +37,14 @@ def test_infer(filename="prontoqa/1hop.json"):
         for j, question in enumerate(chunk):
             if not ans[j]:
                 continue
-            correct = question["answer"].lower() in ans[j]["answer"].lower()
+            
+            correct = parse_number(question["answer"]) == parse_number(ans[j]["answer"])
             res.append({"correct": correct, "question": question["question"], "answer": question["answer"], "response": ans[j]})
             if correct:
                 corr += 1
 
 
-    with open("output/1hop.json", "w") as f:
+    with open("output/math401.json", "w") as f:
         json.dump({"corr": corr, "total": len(res), "list": res}, f)
 
 if __name__ == "__main__":
