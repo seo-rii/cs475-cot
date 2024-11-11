@@ -5,3 +5,4 @@ kagglehub
 immutabledict
 local-gemma[cuda]
 transformers
+datasets
