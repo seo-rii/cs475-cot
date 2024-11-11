@@ -30,7 +30,7 @@ def test_infer():
             if not ans[j]:
                 continue
             
-            correct = ans[j]["answer"].strip() in question["answer"].strip('####')[1].strip()
+            correct = question["answer"].strip('####')[1].strip() in ans[j]["answer"].strip()
             res.append({"correct": correct, "question": question["question"], "answer": question["answer"], "response": ans[j]})
             if correct:
                 corr += 1
