@@ -42,9 +42,6 @@ def evaluate_thoughts(thoughts: List[tuple[str, Any]], k: int = 2) -> List[Tuple
     scored_thoughts = [(thought, history, random.random()) for thought, history in thoughts]
     return sorted(scored_thoughts, key=lambda x: x[2], reverse=True)[:k]
 
-def format_thought_history(thoughts: List[Tuple[str, int]]) -> str:
-    return "\n\n".join([f"Stage {stage}: {thought}" for thought, stage in thoughts])
-
 def make_input(prev_conversations: List[List[str]], question: str) -> dict:
     messages = []
     for prev_conversation in prev_conversations:
