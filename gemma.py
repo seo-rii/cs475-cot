@@ -19,7 +19,11 @@ def infer(inputs, max_new_tokens = 1024):
     generated_ids = model.generate(
             **inputs,
             max_new_tokens=max_new_tokens,
-            do_sample=True
+            do_sample=True,
+            length_penalty=1.0,
+            early_stopping=False,
+            min_length=1,
+            suppress_tokens=[tokenizer.eos_token_id]
         )
     decoded_texts = tokenizer.batch_decode(generated_ids)
     return decoded_texts

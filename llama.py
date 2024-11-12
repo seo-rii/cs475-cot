@@ -23,7 +23,11 @@ def infer(inputs, max_new_tokens = 4096):
     generated_ids = pipeline.model.generate(
             **inputs,
             max_new_tokens=max_new_tokens,
-            do_sample=True
+            do_sample=True,
+            length_penalty=1.0,
+            early_stopping=False,
+            min_length=1,
+            suppress_tokens=[pipeline.tokenizer.eos_token_id]
         )
     decoded_texts = pipeline.tokenizer.batch_decode(generated_ids)
     return decoded_texts
