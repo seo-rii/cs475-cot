@@ -2,6 +2,7 @@ import os
 import json
 import tqdm
 from tot import tree_of_thought
+import re
 
 def parse_number(st):
     li = re.findall(r"\d+", st)
