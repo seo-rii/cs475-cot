@@ -17,28 +17,24 @@ You will have three stages to follow: Initial Analysis, Solution Process, and Fi
 You must follow these steps, and provide your responses in the format provided. You must keep XML tags in your responses.
 Problem: {question}
 
-Stage 1 - Initial Analysis:
-What are the key elements to consider?
+Stage 1 - Initial Analysis: What are the key elements to consider?
 
-You must follow these steps, and provide your responses in the format provided. You must keep XML tags in your responses.
+You must provide your responses in the format provided.
 <stage>Your analysis</stage>
 <next_options>Next possible approaches</next_options>""",
     
-    2: """Stage 2 - Solution Process:
-How should we solve this based on our analysis?
+    2: """Stage 2 - Solution Process: How should we solve this based on our analysis?
 
-You must follow these steps, and provide your responses in the format provided. You must keep XML tags in your responses.
+You must provide your responses in the format provided.
 <stage>Your solution process</stage>
 <next_options>Next possible steps</next_options>""",
     
-    3: """Stage 3 - Final Solution:
-Let's conclude based on our reasoning.
-Think one more time and provide the final answer.
+    3: """Stage 3 - Final Solution: Let's conclude based on our reasoning. Think one more time and provide the final answer.
 
-You must follow these steps, and provide your responses in the format provided. You must keep XML tags in your responses.
+You must provide your responses in the format provided.
 <stage>Your conclusion</stage>
 <answer>Complete sentence answer</answer>
-<short_answer>Your final, concise answer to the query.</short_answer>"""
+<short_answer>Your final, concise answer to the query. Answer in one word if available.</short_answer>"""
 }
 
 
