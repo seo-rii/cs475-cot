@@ -16,11 +16,10 @@ def test_infer(filename="math401-llm.json"):
 
     with open(filename, "r") as f:
         data = json.load(f)
-        for question_name in data:
-            for example in data[question_name]:
-                question = data[question_name][example]["question"] + " " + data[question_name][example]["query"]
-                answer = data[question_name][example]["answer"]
-                req.append({"question": question, "answer": answer})
+        for row in data:
+            question = row["query"]
+            answer = row["response"]
+            req.append({"question": question, "answer": answer})
     
     req = req[:5]
     corr = 0
